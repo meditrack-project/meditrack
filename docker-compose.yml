@@ -141,6 +141,8 @@ services:
     environment:
       JWT_SECRET: ${JWT_SECRET}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
       REDIS_URL: redis://redis:6379
       MEDICAL_SERVICE_URL: http://medical-service:4002
       HEALTH_SERVICE_URL: http://health-service:4003

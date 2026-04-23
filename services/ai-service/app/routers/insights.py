@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas import MedicationSummaryRequest, SymptomAnalysisRequest, InsightsRequest
 from app.utils.auth import get_current_user_id, get_token
 from app.utils.data_fetcher import fetch_all_data, summarize_health_data
-from app.utils.gemini_client import call_gemini, PRESET_QUESTIONS
+from app.utils.ai_client import generate_ai_content, PRESET_QUESTIONS
 from app.rate_limiter import check_rate_limits
 from app.cache import (
     cache_get, cache_set,
@@ -43,11 +43,11 @@ async def _process_ai_request(
     # 5. Summarize data in Python
     summary = summarize_health_data(raw_data, days)
 
-    # 6-8. Build prompt, guard size, call Gemini
+    # 6-8. Build prompt, guard size, call AI (with fallback)
     try:
-        ai_response = await call_gemini(summary, question, days)
+        ai_response = await generate_ai_content(summary, question, days)
     except Exception as e:
-        logger.error(f"Gemini call failed: {e}")
+        logger.error(f"All AI providers failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail={

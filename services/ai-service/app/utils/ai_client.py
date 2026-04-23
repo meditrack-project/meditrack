@@ -1,12 +1,14 @@
 import os
 import logging
 from typing import Dict, Any
-
+import httpx
 import google.generativeai as genai
 
 logger = logging.getLogger(__name__)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
 
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
@@ -119,27 +121,114 @@ def guard_prompt_size(health_summary_text: str, summary: Dict[str, Any]) -> str:
     return "\n".join(new_lines)
 
 
-async def call_gemini(summary: Dict[str, Any], user_question: str, days: int) -> str:
-    """Build prompt from summary and call Gemini API."""
+async def _call_gemini(final_prompt: str) -> str:
+    """Call Google Gemini API."""
     if not GEMINI_API_KEY:
         raise Exception("GEMINI_API_KEY not configured")
+    
+    model = genai.GenerativeModel(
+        model_name="gemini-2.0-flash",
+        generation_config={
+            "max_output_tokens": 400,
+            "temperature": 0.4,
+            "top_p": 0.9,
+        },
+    )
+    response = model.generate_content(final_prompt)
+    return response.text
 
+
+async def _call_groq(final_prompt: str) -> str:
+    """Call Groq API using HTTPX."""
+    if not GROQ_API_KEY:
+        raise Exception("GROQ_API_KEY not configured")
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama3-8b-8192",
+                "messages": [
+                    {"role": "user", "content": final_prompt}
+                ],
+                "max_tokens": 400,
+                "temperature": 0.4,
+                "top_p": 0.9,
+            },
+            timeout=15.0
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
+
+
+async def _call_huggingface(final_prompt: str) -> str:
+    """Call HuggingFace Inference API using HTTPX."""
+    if not HUGGINGFACE_API_KEY:
+        raise Exception("HUGGINGFACE_API_KEY not configured")
+
+    # Using Mistral as it performs well for general chat on HF Serverless
+    model_url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
+    
+    # Format prompt for Mistral
+    hf_prompt = f"<s>[INST] {final_prompt} [/INST]"
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            model_url,
+            headers={
+                "Authorization": f"Bearer {HUGGINGFACE_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "inputs": hf_prompt,
+                "parameters": {
+                    "max_new_tokens": 400,
+                    "temperature": 0.4,
+                    "top_p": 0.9,
+                    "return_full_text": False
+                }
+            },
+            timeout=20.0
+        )
+        response.raise_for_status()
+        data = response.json()
+        if isinstance(data, list) and len(data) > 0:
+            return data[0].get("generated_text", "").strip()
+        return str(data)
+
+
+async def generate_ai_content(summary: Dict[str, Any], user_question: str, days: int) -> str:
+    """Build prompt and execute fallback cascade: Gemini -> Groq -> HuggingFace."""
+    
     health_summary_text = build_health_summary(summary)
     health_summary_text = guard_prompt_size(health_summary_text, summary)
 
     final_prompt = f"{SYSTEM_INSTRUCTION}\n\n{health_summary_text}\n\nUSER REQUEST:\n{user_question}"
 
+    # 1. Primary: Gemini
     try:
-        model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash",
-            generation_config={
-                "max_output_tokens": 400,
-                "temperature": 0.4,
-                "top_p": 0.9,
-            },
-        )
-        response = model.generate_content(final_prompt)
-        return response.text
+        logger.info("Attempting Gemini API...")
+        return await _call_gemini(final_prompt)
     except Exception as e:
-        logger.error(f"Gemini API call failed: {e}")
-        raise Exception(f"Gemini API error: {str(e)}")
+        logger.warning(f"Gemini API failed or quota exceeded: {e}. Falling back to Groq.")
+
+    # 2. Secondary: Groq
+    try:
+        logger.info("Attempting Groq API...")
+        return await _call_groq(final_prompt)
+    except Exception as e:
+        logger.warning(f"Groq API failed: {e}. Falling back to HuggingFace.")
+
+    # 3. Tertiary: HuggingFace
+    try:
+        logger.info("Attempting HuggingFace API...")
+        return await _call_huggingface(final_prompt)
+    except Exception as e:
+        logger.error(f"HuggingFace API failed: {e}. All AI providers exhausted.")
+    
+    raise Exception("All AI providers (Gemini, Groq, HuggingFace) failed.")
