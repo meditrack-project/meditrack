@@ -26,7 +26,7 @@ const createApi = (baseURL) => {
   return instance;
 };
 
-export const userApi = createApi(import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4001');
-export const medicalApi = createApi(import.meta.env.VITE_MEDICAL_SERVICE_URL || 'http://localhost:4002');
-export const healthApi = createApi(import.meta.env.VITE_HEALTH_SERVICE_URL || 'http://localhost:4003');
-export const aiApi = createApi(import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:4004');
+export const userApi = createApi('');
+export const medicalApi = createApi('');
+export const healthApi = createApi('');
+export const aiApi = createApi('');
