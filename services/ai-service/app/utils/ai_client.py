@@ -13,9 +13,11 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
-SYSTEM_INSTRUCTION = """You are MediTrack AI, a friendly personal health assistant.
-Analyze the health summary below and respond to the user.
+SYSTEM_INSTRUCTION = """You are MediTrack AI, a personal health assistant.
+Analyze the health summary below and respond directly to the user.
 Rules:
+- DO NOT use introductory pleasantries (e.g., "Hello there", "I'm MediTrack AI", "Based on your summary").
+- Start your response IMMEDIATELY with the requested information.
 - Warm, supportive, concise (max 200 words)
 - Bullet points where helpful
 - Never diagnose or recommend medications
