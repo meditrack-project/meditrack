@@ -81,6 +81,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@user-db:5432/userdb
       JWT_SECRET: ${JWT_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       PORT: "4001"
     depends_on:
       user-db:
@@ -99,6 +100,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@medical-db:5432/medicaldb
       JWT_SECRET: ${JWT_SECRET}
       REDIS_URL: redis://redis:6379
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       PORT: "4002"
     depends_on:
       medical-db:
@@ -119,6 +121,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@health-db:5432/healthdb
       JWT_SECRET: ${JWT_SECRET}
       REDIS_URL: redis://redis:6379
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       PORT: "4003"
     depends_on:
       health-db:
@@ -141,6 +144,7 @@ services:
       REDIS_URL: redis://redis:6379
       MEDICAL_SERVICE_URL: http://medical-service:4002
       HEALTH_SERVICE_URL: http://health-service:4003
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       PORT: "4004"
     depends_on:
       redis:
