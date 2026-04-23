@@ -1,0 +1,33 @@
+.symptom-history { margin-top: 28px; }
+.history-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--color-border); }
+.history-tab {
+  padding: 10px 20px; font-size: 0.875rem; font-weight: 600;
+  color: var(--color-muted); background: none; border: none;
+  border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer;
+  transition: var(--transition);
+}
+.history-tab:hover { color: var(--color-primary); }
+.history-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.history-cards { display: flex; flex-direction: column; gap: 10px; }
+.history-card {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: 16px; animation: fadeIn 0.3s ease;
+}
+.history-card-date { font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--color-primary); }
+.history-card-symptoms { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.history-card-scores { display: flex; gap: 16px; font-size: 0.8rem; color: var(--color-muted); }
+.history-table { width: 100%; border-collapse: collapse; }
+.history-table th {
+  text-align: left; padding: 10px 12px; font-size: 0.8rem;
+  color: var(--color-muted); border-bottom: 2px solid var(--color-border);
+}
+.history-table td { padding: 10px 12px; font-size: 0.85rem; border-bottom: 1px solid var(--color-border); }
+.history-table tr:hover { background: rgba(15, 118, 110, 0.03); }
+.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+.pagination button {
+  padding: 6px 14px; border-radius: var(--radius-sm); font-size: 0.85rem;
+  border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text);
+}
+.pagination button.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+.history-actions { display: flex; gap: 6px; }
+.history-actions button { padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; }

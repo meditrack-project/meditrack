@@ -1,0 +1,8 @@
+.trend-chart-wrapper {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--card-shadow);
+}
+.trend-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.trend-stat { text-align: center; padding: 10px; background: var(--color-background); border-radius: var(--radius-md); }
+.trend-stat-value { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
+.trend-stat-label { font-size: 0.75rem; color: var(--color-muted); }

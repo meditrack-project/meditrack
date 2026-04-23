@@ -1,0 +1,4 @@
+.visit-detail-grid { display: grid; gap: 16px; }
+.visit-detail-row { display: grid; grid-template-columns: 120px 1fr; gap: 8px; }
+.visit-detail-label { font-weight: 600; font-size: 0.85rem; color: var(--color-muted); }
+.visit-detail-value { font-size: 0.9rem; color: var(--color-text); }

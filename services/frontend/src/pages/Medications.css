@@ -1,0 +1,4 @@
+.medications-page { animation: fadeIn 0.3s ease; }
+.med-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 20px; }
+.med-empty { text-align: center; padding: 48px 20px; color: var(--color-muted); }
+.med-empty p { margin-bottom: 16px; font-size: 1rem; }

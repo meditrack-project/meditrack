@@ -1,0 +1,18 @@
+.med-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 500px) {
+  .med-form .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.med-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}

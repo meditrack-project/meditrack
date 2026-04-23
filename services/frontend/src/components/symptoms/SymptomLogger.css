@@ -1,0 +1,41 @@
+.symptom-logger { animation: fadeIn 0.3s ease; }
+.symptom-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.symptom-chip {
+  padding: 8px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+  border: 1.5px solid var(--color-border); background: var(--color-surface);
+  color: var(--color-muted); cursor: pointer; transition: var(--transition);
+  user-select: none;
+}
+.symptom-chip:hover { border-color: var(--color-secondary); color: var(--color-primary); }
+.symptom-chip.selected {
+  background: var(--color-primary); color: white; border-color: var(--color-primary);
+}
+.slider-group { margin-bottom: 20px; }
+.slider-label {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; font-weight: 600; font-size: 0.875rem;
+}
+.slider-value { font-weight: 700; color: var(--color-primary); }
+.slider-input {
+  width: 100%; height: 6px; -webkit-appearance: none; appearance: none;
+  background: var(--color-border); border-radius: 999px; outline: none;
+}
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--color-primary); cursor: pointer;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.3);
+}
+.notes-counter { text-align: right; font-size: 0.75rem; color: var(--color-muted); margin-top: 4px; }
+.logger-submit { margin-top: 16px; }
+.today-summary {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--card-shadow);
+}
+.today-summary h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.today-summary-symptoms { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.today-summary-scores {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px;
+}
+.score-item { text-align: center; padding: 8px; background: var(--color-background); border-radius: var(--radius-md); }
+.score-label { font-size: 0.7rem; color: var(--color-muted); }
+.score-value { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); }

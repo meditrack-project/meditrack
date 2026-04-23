@@ -1,0 +1,12 @@
+.quick-actions-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.qa-bar-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px; background: var(--color-surface); border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600;
+  color: var(--color-text); cursor: pointer; transition: var(--transition);
+}
+.qa-bar-btn:hover {
+  border-color: var(--color-primary); color: var(--color-primary);
+  transform: translateY(-2px); box-shadow: var(--card-shadow);
+}
+@media (max-width: 600px) { .quick-actions-bar { grid-template-columns: repeat(2, 1fr); } }

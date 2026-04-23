@@ -1,0 +1,11 @@
+.welcome-banner {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-radius: var(--radius-lg); padding: 28px 32px; color: white; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+}
+.welcome-banner::after {
+  content: ''; position: absolute; right: -40px; top: -40px; width: 200px; height: 200px;
+  border-radius: 50%; background: rgba(255,255,255,0.08);
+}
+.welcome-banner h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+.welcome-banner p { font-size: 0.9rem; opacity: 0.9; }

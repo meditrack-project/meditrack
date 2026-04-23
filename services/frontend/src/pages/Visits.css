@@ -1,0 +1,5 @@
+.visits-page { animation: fadeIn 0.3s ease; }
+.visits-section { margin-bottom: 32px; }
+.visits-section h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; }
+.visits-list { display: flex; flex-direction: column; gap: 14px; }
+.visits-empty { color: var(--color-muted); padding: 16px 0; font-size: 0.9rem; }

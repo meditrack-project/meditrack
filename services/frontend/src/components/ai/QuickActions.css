@@ -1,0 +1,11 @@
+.quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+.quick-action-btn {
+  display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+  background: var(--color-surface); border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600;
+  color: var(--color-text); cursor: pointer; transition: var(--transition);
+}
+.quick-action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); transform: translateY(-2px); box-shadow: var(--card-shadow); }
+.quick-action-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.quick-action-btn .qa-icon { font-size: 1.2rem; }
+@media (max-width: 500px) { .quick-actions { grid-template-columns: 1fr; } }

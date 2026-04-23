@@ -1,0 +1,187 @@
+version: "3.8"
+
+services:
+
+  redis:
+    image: redis:7-alpine
+    container_name: meditrack-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    networks:
+      - meditrack-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-db:
+    image: postgres:16-alpine
+    container_name: meditrack-user-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    networks:
+      - meditrack-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d userdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  medical-db:
+    image: postgres:16-alpine
+    container_name: meditrack-medical-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: medicaldb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - medical_db_data:/var/lib/postgresql/data
+    networks:
+      - meditrack-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d medicaldb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  health-db:
+    image: postgres:16-alpine
+    container_name: meditrack-health-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: healthdb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - health_db_data:/var/lib/postgresql/data
+    networks:
+      - meditrack-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d healthdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  user-service:
+    build: ./services/user-service
+    container_name: meditrack-user-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@user-db:5432/userdb
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: "4001"
+    depends_on:
+      user-db:
+        condition: service_healthy
+    networks:
+      - meditrack-network
+    ports:
+      - "4001:4001"
+
+  medical-service:
+    build: ./services/medical-service
+    container_name: meditrack-medical-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@medical-db:5432/medicaldb
+      JWT_SECRET: ${JWT_SECRET}
+      REDIS_URL: redis://redis:6379
+      PORT: "4002"
+    depends_on:
+      medical-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    networks:
+      - meditrack-network
+    ports:
+      - "4002:4002"
+
+  health-service:
+    build: ./services/health-service
+    container_name: meditrack-health-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@health-db:5432/healthdb
+      JWT_SECRET: ${JWT_SECRET}
+      REDIS_URL: redis://redis:6379
+      PORT: "4003"
+    depends_on:
+      health-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    networks:
+      - meditrack-network
+    ports:
+      - "4003:4003"
+
+  ai-service:
+    build: ./services/ai-service
+    container_name: meditrack-ai-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      REDIS_URL: redis://redis:6379
+      MEDICAL_SERVICE_URL: http://medical-service:4002
+      HEALTH_SERVICE_URL: http://health-service:4003
+      PORT: "4004"
+    depends_on:
+      redis:
+        condition: service_healthy
+      medical-service:
+        condition: service_healthy
+      health-service:
+        condition: service_healthy
+    networks:
+      - meditrack-network
+    ports:
+      - "4004:4004"
+
+  frontend:
+    build:
+      context: ./services/frontend
+      args:
+        VITE_USER_SERVICE_URL: http://localhost:4001
+        VITE_MEDICAL_SERVICE_URL: http://localhost:4002
+        VITE_HEALTH_SERVICE_URL: http://localhost:4003
+        VITE_AI_SERVICE_URL: http://localhost:4004
+    container_name: meditrack-frontend
+    restart: unless-stopped
+    depends_on:
+      - user-service
+      - medical-service
+      - health-service
+      - ai-service
+    networks:
+      - meditrack-network
+    ports:
+      - "80:80"
+
+networks:
+  meditrack-network:
+    driver: bridge
+
+volumes:
+  user_db_data:
+  medical_db_data:
+  health_db_data:

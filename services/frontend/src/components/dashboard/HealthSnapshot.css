@@ -1,0 +1,24 @@
+.health-snapshot { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.snapshot-card {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--card-shadow);
+  text-align: center; transition: var(--transition);
+}
+.snapshot-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(15, 118, 110, 0.12); }
+.snapshot-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.snapshot-value { font-size: 1.5rem; font-weight: 800; color: var(--color-text); }
+.snapshot-label { font-size: 0.75rem; color: var(--color-muted); margin-top: 4px; }
+.snapshot-sub { font-size: 0.7rem; color: var(--color-muted); margin-top: 2px; }
+.snapshot-progress {
+  width: 100%; height: 6px; background: var(--color-border); border-radius: 999px;
+  overflow: hidden; margin-top: 8px;
+}
+.snapshot-progress-fill { height: 100%; background: var(--color-primary); border-radius: 999px; transition: width 0.5s; }
+.snapshot-circle {
+  width: 60px; height: 60px; border-radius: 50%; border: 4px solid var(--color-border);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;
+  position: relative;
+}
+.snapshot-circle-value { font-size: 0.85rem; font-weight: 800; color: var(--color-primary); }
+@media (max-width: 768px) { .health-snapshot { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 400px) { .health-snapshot { grid-template-columns: 1fr; } }

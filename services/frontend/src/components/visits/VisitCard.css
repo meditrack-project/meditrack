@@ -1,0 +1,19 @@
+.visit-card {
+  display: flex; gap: 20px; background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--card-shadow);
+  transition: var(--transition); animation: fadeIn 0.3s ease;
+}
+.visit-card:hover { box-shadow: 0 4px 16px rgba(15, 118, 110, 0.12); transform: translateY(-2px); }
+.visit-date-box {
+  text-align: center; min-width: 60px; padding: 8px; background: var(--color-background);
+  border-radius: var(--radius-md); flex-shrink: 0;
+}
+.visit-date-month { font-size: 0.7rem; font-weight: 700; color: var(--color-primary); text-transform: uppercase; }
+.visit-date-day { font-size: 1.5rem; font-weight: 800; color: var(--color-text); }
+.visit-date-year { font-size: 0.7rem; color: var(--color-muted); }
+.visit-info { flex: 1; }
+.visit-doctor { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+.visit-detail { font-size: 0.85rem; color: var(--color-muted); margin-bottom: 2px; }
+.visit-card-actions { display: flex; gap: 8px; margin-top: 10px; }
+.visit-card-actions button { padding: 5px 12px; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600; }
+@media (max-width: 500px) { .visit-card { flex-direction: column; gap: 12px; } }
