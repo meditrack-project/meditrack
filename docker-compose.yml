@@ -158,10 +158,10 @@ services:
     build:
       context: ./services/frontend
       args:
-        VITE_USER_SERVICE_URL: http://localhost:4001
-        VITE_MEDICAL_SERVICE_URL: http://localhost:4002
-        VITE_HEALTH_SERVICE_URL: http://localhost:4003
-        VITE_AI_SERVICE_URL: http://localhost:4004
+        VITE_USER_SERVICE_URL: http://YOUR-EC2-IP:4001
+        VITE_MEDICAL_SERVICE_URL: http://YOUR-EC2-IP:4002
+        VITE_HEALTH_SERVICE_URL: http://YOUR-EC2-IP:4003
+        VITE_AI_SERVICE_URL: http://YOUR-EC2-IP:4004
     container_name: meditrack-frontend
     restart: unless-stopped
     depends_on:
