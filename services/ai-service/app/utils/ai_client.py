@@ -151,16 +151,17 @@ async def _call_groq(final_prompt: str) -> str:
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama3-8b-8192",
+                "model": "llama-3.1-8b-instant",
                 "messages": [
                     {"role": "user", "content": final_prompt}
                 ],
-                "max_tokens": 400,
                 "temperature": 0.4,
-                "top_p": 0.9,
+                "max_tokens": 400,
             },
             timeout=15.0
         )
+        if response.status_code != 200:
+            logger.error(f"Groq Error Body: {response.text}")
         response.raise_for_status()
         data = response.json()
         return data["choices"][0]["message"]["content"]
@@ -171,11 +172,11 @@ async def _call_huggingface(final_prompt: str) -> str:
     if not HUGGINGFACE_API_KEY:
         raise Exception("HUGGINGFACE_API_KEY not configured")
 
-    # Using Mistral as it performs well for general chat on HF Serverless
-    model_url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
+    # Using Zephyr as it's highly reliable on HF free tier
+    model_url = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
     
-    # Format prompt for Mistral
-    hf_prompt = f"<s>[INST] {final_prompt} [/INST]"
+    # Format prompt for Zephyr
+    hf_prompt = f"<|system|>\nYou are MediTrack AI.</s>\n<|user|>\n{final_prompt}</s>\n<|assistant|>\n"
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -189,12 +190,13 @@ async def _call_huggingface(final_prompt: str) -> str:
                 "parameters": {
                     "max_new_tokens": 400,
                     "temperature": 0.4,
-                    "top_p": 0.9,
                     "return_full_text": False
                 }
             },
             timeout=20.0
         )
+        if response.status_code != 200:
+            logger.error(f"HF Error Body: {response.text}")
         response.raise_for_status()
         data = response.json()
         if isinstance(data, list) and len(data) > 0:
