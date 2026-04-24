@@ -7,11 +7,15 @@ from app.database import get_db
 from app.models import User
 from app.schemas import RegisterRequest, LoginRequest, UserResponse, UserBriefResponse
 from app.utils.hashing import hash_password, verify_password
-from app.utils.auth import create_token, get_current_user
+from app.utils.auth import create_token, get_current_user, get_jwks
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
+@router.get("/jwks")
+def jwks():
+    """Return the public keys in JWKS format for KGateway validation."""
+    return get_jwks()
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/hour")

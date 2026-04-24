@@ -35,9 +35,25 @@ async def add_security_headers(request: Request, call_next):
     return response
 
 
+import time
+import logging
+
 @app.on_event("startup")
 async def startup():
-    Base.metadata.create_all(bind=engine)
+    max_retries = 10
+    retry_delay = 3
+    
+    for attempt in range(max_retries):
+        try:
+            Base.metadata.create_all(bind=engine)
+            logging.info("Database connected successfully!")
+            break
+        except Exception as e:
+            if attempt == max_retries - 1:
+                logging.error("Database connection failed after maximum retries.")
+                raise
+            logging.warning(f"Database connection attempt {attempt+1} failed: {e}. Retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
 
 
 app.include_router(symptoms.router)

@@ -1,36 +1,14 @@
-import os
-import uuid
-from datetime import datetime, timedelta, timezone
+from fastapi import Request, HTTPException, status
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError, jwt
-
-JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
-JWT_ALGORITHM = "HS256"
-
-security = HTTPBearer()
-
-
-def decode_token(token: str) -> dict:
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        return payload
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"success": False, "message": "Invalid or expired token"},
-        )
-
-
-def get_current_user_id(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> str:
-    payload = decode_token(credentials.credentials)
-    user_id = payload.get("sub")
+def get_current_user_id(request: Request) -> str:
+    """
+    Extract user_id from the X-User-ID header injected by KGateway.
+    Backend services no longer validate JWTs themselves.
+    """
+    user_id = request.headers.get("X-User-ID")
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"success": False, "message": "Invalid token payload"},
+            detail={"success": False, "message": "Missing X-User-ID header. Unauthorized."},
         )
     return user_id
