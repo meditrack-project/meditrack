@@ -45,11 +45,11 @@ spec:
             runAsNonRoot: false
           resources:
             requests:
-              cpu: 10m
-              memory: 16Mi
+              cpu: 50m
+              memory: 64Mi
             limits:
               cpu: 50m
-              memory: 32Mi
+              memory: 128Mi
       containers:
         - name: postgres
           image: postgres:16-alpine

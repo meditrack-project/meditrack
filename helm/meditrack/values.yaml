@@ -266,3 +266,15 @@ global:
     min:
       cpu: 50m
       memory: 64Mi
+
+# ═══════════════════════════════════════
+# INITCONTAINER RESOURCES
+# ═══════════════════════════════════════
+initContainers:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
