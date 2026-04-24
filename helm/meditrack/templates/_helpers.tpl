@@ -40,11 +40,11 @@ Init container: wait for a service on a specific port
       echo "{{ .name }}:{{ .port }} is ready!"
   resources:
     requests:
-      cpu: 10m
-      memory: 16Mi
+      cpu: 50m
+      memory: 64Mi
     limits:
       cpu: 50m
-      memory: 32Mi
+      memory: 128Mi
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:

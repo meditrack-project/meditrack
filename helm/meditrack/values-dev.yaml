@@ -5,145 +5,147 @@
 # Phase: 2 — Kubernetes + Helm Implementation
 # ─────────────────────────────────────────────────────────────
 
+# ← ONLY global-specific overrides here
 global:
   environment: development
 
-  userService:
-    replicas: 1
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-    hpa:
-      enabled: false
-    pdb:
-      enabled: false
-
-  medicalService:
-    replicas: 1
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-    hpa:
-      enabled: false
-    pdb:
-      enabled: false
-
-  healthService:
-    replicas: 1
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-    hpa:
-      enabled: false
-    pdb:
-      enabled: false
-
-  aiService:
-    replicas: 1
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-    hpa:
-      enabled: false
-    pdb:
-      enabled: false
-
-  frontend:
-    replicas: 1
-    resources:
-      requests:
-        cpu: 25m
-        memory: 32Mi
-      limits:
-        cpu: 100m
-        memory: 128Mi
-    hpa:
-      enabled: false
-    pdb:
-      enabled: false
-
-  userDb:
-    storage: 2Gi
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-    pdb:
-      enabled: false
-
-  medicalDb:
-    storage: 2Gi
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-    pdb:
-      enabled: false
-
-  healthDb:
-    storage: 2Gi
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-    pdb:
-      enabled: false
-
-  redis:
-    storage:
-      type: emptyDir
-    nodeSelector: {}
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-    pdb:
-      enabled: false
-
-  haproxy:
-    pdb:
-      enabled: false
-
-  config:
-    logLevel: debug
-    environment: development
-    allowedOrigins: "http://meditrack.dev.local"
-
-  resourceQuota:
+# ← ALL service overrides at ROOT level
+userService:
+  replicas: 1
+  resources:
     requests:
-      cpu: "2"
-      memory: "4Gi"
+      cpu: 50m
+      memory: 64Mi
     limits:
-      cpu: "4"
-      memory: "8Gi"
-    pods: "20"
-    services: "15"
-    pvcs: "10"
+      cpu: 200m
+      memory: 256Mi
+  hpa:
+    enabled: false
+  pdb:
+    enabled: false
+
+medicalService:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  hpa:
+    enabled: false
+  pdb:
+    enabled: false
+
+healthService:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  hpa:
+    enabled: false
+  pdb:
+    enabled: false
+
+aiService:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  hpa:
+    enabled: false
+  pdb:
+    enabled: false
+
+frontend:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m      # ← was 25m (below LimitRange min)
+      memory: 64Mi  # ← was 32Mi (below LimitRange min)
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  hpa:
+    enabled: false
+  pdb:
+    enabled: false
+
+userDb:
+  storage: 2Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  pdb:
+    enabled: false
+
+medicalDb:
+  storage: 2Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  pdb:
+    enabled: false
+
+healthDb:
+  storage: 2Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  pdb:
+    enabled: false
+
+redis:
+  storage:
+    type: emptyDir
+  nodeSelector: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  pdb:
+    enabled: false
+
+haproxy:
+  pdb:
+    enabled: false
+
+config:
+  logLevel: debug
+  environment: development
+  allowedOrigins: "http://meditrack.dev.local"
+
+resourceQuota:
+  requests:
+    cpu: "2"
+    memory: "4Gi"
+  limits:
+    cpu: "4"
+    memory: "8Gi"
+  pods: "20"
+  services: "15"
+  pvcs: "10"
