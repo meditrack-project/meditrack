@@ -48,7 +48,7 @@ function AIInsights() {
         <div className="page-header">
           <div>
             <h1>AI Health Assistant 🤖</h1>
-            <p className="ai-header-sub">Powered by Google Gemini · Analyzes your real health data</p>
+            <p className="ai-header-sub">Powered by Advanced AI · Analyzes your real health data</p>
           </div>
         </div>
         <div className="ai-page">

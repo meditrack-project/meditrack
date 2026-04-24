@@ -37,7 +37,7 @@ function Landing() {
           <div className="feature-card">
             <div className="feature-icon">🤖</div>
             <h3>AI Health Insights</h3>
-            <p>Get personalized health insights powered by Google Gemini AI. Ask questions about your health data anytime.</p>
+            <p>Get personalized health insights powered by advanced AI. Ask questions about your health data anytime.</p>
           </div>
         </div>
       </section>
