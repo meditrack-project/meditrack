@@ -21,6 +21,7 @@ global:
     server: "172.31.26.112"
     path: "/srv/nfs/meditrack"
     storageClass: meditrack-nfs
+    createStorageClass: false
 
   # ─── Application Services ─────────────────────────────────
 

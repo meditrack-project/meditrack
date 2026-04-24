@@ -1,9 +1,21 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — NFS StorageClass
+# Environment: cluster-scoped
+# Namespace: cluster-scoped (not namespaced)
+# Phase: 2 — Kubernetes + Helm Implementation
+# Note: Set global.nfs.createStorageClass: false if
+#       NFS provisioner Helm chart manages this instead
+# ─────────────────────────────────────────────────────────────
+{{- if .Values.global.nfs.createStorageClass }}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: {{ .Values.global.nfs.storageClass }}
   labels:
     {{- include "meditrack.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 provisioner: cluster.local/nfs-provisioner
 reclaimPolicy: Retain
 allowVolumeExpansion: true
@@ -13,3 +25,4 @@ mountOptions:
   - nfsvers=4.1
   - hard
   - nointr
+{{- end }}
