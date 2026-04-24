@@ -40,10 +40,6 @@ spec:
             - "128mb"
             - --maxmemory-policy
             - allkeys-lru
-            - --appendonly
-            - "yes"
-            - --appendfsync
-            - everysec
           ports:
             - containerPort: {{ .Values.global.redis.port }}
               protocol: TCP
