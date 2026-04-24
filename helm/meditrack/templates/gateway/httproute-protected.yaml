@@ -1,0 +1,63 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — Protected HTTPRoutes (JWT required via SecurityPolicy)
+# Environment: both
+# Namespace: meditrack-dev | meditrack-prod
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: meditrack-protected-routes
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "meditrack.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: meditrack-gateway
+      namespace: {{ .Values.namespace.infra }}
+  rules:
+    # /api/auth/me, /api/auth/logout (protected auth routes)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/auth/me
+        - path:
+            type: PathPrefix
+            value: /api/auth/logout
+      backendRefs:
+        - name: {{ .Values.userService.name }}
+          port: {{ .Values.userService.port }}
+    # /api/medications/*
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/medications
+      backendRefs:
+        - name: {{ .Values.medicalService.name }}
+          port: {{ .Values.medicalService.port }}
+    # /api/symptoms/*
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/symptoms
+      backendRefs:
+        - name: {{ .Values.healthService.name }}
+          port: {{ .Values.healthService.port }}
+    # /api/visits/*
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/visits
+      backendRefs:
+        - name: {{ .Values.healthService.name }}
+          port: {{ .Values.healthService.port }}
+    # /api/ai/*
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/ai
+      backendRefs:
+        - name: {{ .Values.aiService.name }}
+          port: {{ .Values.aiService.port }}
+{{- end }}

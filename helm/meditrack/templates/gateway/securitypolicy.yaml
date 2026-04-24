@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — SecurityPolicy for JWT authentication on protected routes
+# Environment: both
+# Namespace: meditrack-dev | meditrack-prod
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: meditrack-jwt-auth
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "meditrack.labels" . | nindent 4 }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: meditrack-protected-routes
+  jwt:
+    providers:
+      - name: meditrack-provider
+        issuer: {{ .Values.gateway.jwt.issuer }}
+        audiences:
+          - {{ .Values.gateway.jwt.audience }}
+        remoteJWKS:
+          uri: http://{{ .Values.userService.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.userService.port }}/api/auth/jwks
+        claimToHeaders:
+          - claim: sub
+            header: X-User-ID
+          - claim: email
+            header: X-User-Email
+{{- end }}

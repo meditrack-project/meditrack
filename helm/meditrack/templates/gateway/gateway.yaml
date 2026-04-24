@@ -1,0 +1,38 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — Single Gateway with two listeners (prod + dev)
+# Environment: both
+# Namespace: meditrack-infra
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: meditrack-gateway
+  namespace: {{ .Values.namespace.infra }}
+  labels:
+    {{- include "meditrack.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: {{ .Values.gateway.className }}
+  listeners:
+    - name: prod
+      port: 80
+      protocol: HTTP
+      hostname: {{ .Values.haproxy.hosts.prod }}
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.namespace.prod }}
+    - name: dev
+      port: 80
+      protocol: HTTP
+      hostname: {{ .Values.haproxy.hosts.dev }}
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.namespace.dev }}
+{{- end }}

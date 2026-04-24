@@ -1,0 +1,10 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — user-service subchart metadata
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+apiVersion: v2
+name: user-service
+description: MediTrack User Authentication Service
+type: application
+version: 2.0.0
+appVersion: "2.0.0"

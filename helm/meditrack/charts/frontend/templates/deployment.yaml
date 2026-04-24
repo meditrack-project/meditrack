@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontend.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "frontend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.frontend.name }}
+  {{- include "meditrack.deploymentStrategy" . | nindent 2 }}
+  template:
+    metadata:
+      labels:
+        {{- include "frontend.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: meditrack-app-sa
+      terminationGracePeriodSeconds: 30
+      {{- include "meditrack.frontendSecurityContext" . | nindent 6 }}
+      {{- include "meditrack.podAntiAffinity" (dict "name" .Values.frontend.name) | nindent 6 }}
+      initContainers:
+        {{- include "meditrack.initWait" (dict "name" "user-service" "port" "4001") | nindent 8 }}
+      containers:
+        - name: {{ .Values.frontend.name }}
+          image: {{ include "meditrack.image" (dict "registry" .Values.global.registry "image" .Values.frontend.image "tag" .Values.global.imageTag) }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+              protocol: TCP
+          resources:
+            requests:
+              cpu: {{ .Values.frontend.resources.requests.cpu }}
+              memory: {{ .Values.frontend.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.frontend.resources.limits.cpu }}
+              memory: {{ .Values.frontend.resources.limits.memory }}
+          startupProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.port }}
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.port }}
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          {{- include "meditrack.lifecycle" . | nindent 10 }}
+          {{- include "meditrack.containerSecurityContext" . | nindent 10 }}

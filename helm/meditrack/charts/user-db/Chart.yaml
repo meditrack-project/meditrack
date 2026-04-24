@@ -1,0 +1,6 @@
+apiVersion: v2
+name: user-db
+description: MediTrack User Database (PostgreSQL 16)
+type: application
+version: 2.0.0
+appVersion: "16.0"

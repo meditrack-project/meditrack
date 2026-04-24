@@ -1,0 +1,14 @@
+{{- if .Values.haproxy.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: haproxy-pdb
+  namespace: {{ .Values.namespace.infra }}
+  labels:
+    {{- include "haproxy.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.haproxy.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app: haproxy
+{{- end }}

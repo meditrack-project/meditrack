@@ -1,0 +1,6 @@
+apiVersion: v2
+name: health-service
+description: MediTrack Health Symptoms and Visits Service
+type: application
+version: 2.0.0
+appVersion: "2.0.0"

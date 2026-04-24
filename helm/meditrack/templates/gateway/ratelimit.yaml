@@ -1,0 +1,31 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — Rate limiting via BackendTrafficPolicy
+# Environment: both
+# Namespace: meditrack-dev | meditrack-prod
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: meditrack-ratelimit
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "meditrack.labels" . | nindent 4 }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: meditrack-protected-routes
+  rateLimit:
+    type: Global
+    global:
+      rules:
+        - clientSelectors:
+            - headers:
+                - name: ":path"
+                  type: Distinct
+          limit:
+            requests: 100
+            unit: Minute
+{{- end }}

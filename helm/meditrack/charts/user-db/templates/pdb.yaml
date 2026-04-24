@@ -1,0 +1,14 @@
+{{- if .Values.userDb.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.userDb.name }}-pdb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "user-db.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.userDb.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app: {{ .Values.userDb.name }}
+{{- end }}

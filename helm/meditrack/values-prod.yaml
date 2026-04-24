@@ -1,0 +1,9 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — Prod environment overrides (minimal, values.yaml is prod default)
+# Environment: prod
+# Namespace: meditrack-prod
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+
+global:
+  environment: production

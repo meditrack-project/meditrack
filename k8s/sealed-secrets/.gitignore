@@ -1,0 +1,5 @@
+# Sealed secrets contain encrypted values - safe to commit
+# Raw secret YAML files should NEVER be committed
+*.yaml
+!*-sealed.yaml
+raw/

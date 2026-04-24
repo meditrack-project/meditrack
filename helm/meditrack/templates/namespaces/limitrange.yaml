@@ -1,0 +1,28 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — LimitRange for default pod resource constraints
+# Environment: both
+# Namespace: meditrack-dev | meditrack-prod
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: meditrack-limits
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "meditrack.labels" . | nindent 4 }}
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: {{ .Values.limitRange.default.cpu }}
+        memory: {{ .Values.limitRange.default.memory }}
+      defaultRequest:
+        cpu: {{ .Values.limitRange.defaultRequest.cpu }}
+        memory: {{ .Values.limitRange.defaultRequest.memory }}
+      max:
+        cpu: {{ .Values.limitRange.max.cpu }}
+        memory: {{ .Values.limitRange.max.memory }}
+      min:
+        cpu: {{ .Values.limitRange.min.cpu }}
+        memory: {{ .Values.limitRange.min.memory }}

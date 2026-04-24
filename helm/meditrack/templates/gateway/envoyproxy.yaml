@@ -1,0 +1,29 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — EnvoyProxy custom resource for gateway tuning
+# Environment: cluster-scoped
+# Namespace: meditrack-infra
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: meditrack-envoy-config
+  namespace: {{ .Values.namespace.infra }}
+  labels:
+    {{- include "meditrack.labels" . | nindent 4 }}
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        replicas: 2
+        container:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+{{- end }}

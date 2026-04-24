@@ -1,0 +1,6 @@
+apiVersion: v2
+name: redis
+description: MediTrack Redis Cache (Redis 7)
+type: application
+version: 2.0.0
+appVersion: "7.0"

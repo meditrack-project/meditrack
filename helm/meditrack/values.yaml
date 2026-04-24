@@ -1,0 +1,268 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — Global values (production defaults)
+# Environment: prod (default), overridden by values-dev.yaml
+# Namespace: meditrack-prod
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+
+global:
+  registry: "neerajbala"
+  imageTag: "v2-phase2"
+  imagePullPolicy: Always
+  environment: production
+
+namespace:
+  prod: meditrack-prod
+  dev: meditrack-dev
+  infra: meditrack-infra
+  monitoring: meditrack-monitoring
+
+nfs:
+  server: "172.31.26.112"
+  path: "/srv/nfs/meditrack"
+  storageClass: meditrack-nfs
+
+# ─── Application Services ───────────────────────────────────
+
+userService:
+  name: user-service
+  image: meditrack-user-service
+  port: 4001
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    cpuUtilization: 70
+    memoryUtilization: 80
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+medicalService:
+  name: medical-service
+  image: meditrack-medical-service
+  port: 4002
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    cpuUtilization: 70
+    memoryUtilization: 80
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+healthService:
+  name: health-service
+  image: meditrack-health-service
+  port: 4003
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    cpuUtilization: 70
+    memoryUtilization: 80
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+aiService:
+  name: ai-service
+  image: meditrack-ai-service
+  port: 4004
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    cpuUtilization: 60
+    memoryUtilization: 80
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+frontend:
+  name: frontend
+  image: meditrack-frontend
+  port: 80
+  replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  hpa:
+    enabled: false
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+# ─── Databases ───────────────────────────────────────────────
+
+userDb:
+  name: user-db
+  storage: 5Gi
+  dbName: userdb
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+medicalDb:
+  name: medical-db
+  storage: 5Gi
+  dbName: medicaldb
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+healthDb:
+  name: health-db
+  storage: 5Gi
+  dbName: healthdb
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+redis:
+  name: redis
+  port: 6379
+  storage:
+    type: hostPath
+    hostPath: /data/meditrack/redis
+  nodeSelector:
+    meditrack-redis-node: "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+# ─── HAProxy ─────────────────────────────────────────────────
+
+haproxy:
+  replicas: 2
+  nodePorts:
+    prod: 30080
+    dev: 30081
+    stats: 30404
+  pdb:
+    enabled: true
+    minAvailable: 1
+  hosts:
+    prod: meditrack.prod.local
+    dev: meditrack.dev.local
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# ─── Gateway ─────────────────────────────────────────────────
+
+gateway:
+  enabled: true
+  className: meditrack-gateway-class
+  jwt:
+    issuer: "meditrack"
+    audience: "meditrack-app"
+
+# ─── Config ──────────────────────────────────────────────────
+
+config:
+  logLevel: info
+  environment: production
+  redisUrl: "redis://redis:6379"
+  medicalServiceUrl: "http://medical-service:4002"
+  healthServiceUrl: "http://health-service:4003"
+  userServiceUrl: "http://user-service:4001"
+  allowedOrigins: "http://meditrack.prod.local"
+
+# ─── Resource Quotas ─────────────────────────────────────────
+
+resourceQuota:
+  requests:
+    cpu: "4"
+    memory: "8Gi"
+  limits:
+    cpu: "8"
+    memory: "16Gi"
+  pods: "40"
+  services: "20"
+  pvcs: "15"
+
+# ─── Limit Range ─────────────────────────────────────────────
+
+limitRange:
+  default:
+    cpu: 500m
+    memory: 512Mi
+  defaultRequest:
+    cpu: 100m
+    memory: 128Mi
+  max:
+    cpu: 2000m
+    memory: 2Gi
+  min:
+    cpu: 50m
+    memory: 64Mi

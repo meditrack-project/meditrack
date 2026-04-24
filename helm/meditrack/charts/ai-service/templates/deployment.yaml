@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.aiService.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "ai-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.aiService.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.aiService.name }}
+  {{- include "meditrack.deploymentStrategy" . | nindent 2 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ai-service.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: meditrack-app-sa
+      terminationGracePeriodSeconds: 30
+      {{- include "meditrack.appSecurityContext" . | nindent 6 }}
+      {{- include "meditrack.podAntiAffinity" (dict "name" .Values.aiService.name) | nindent 6 }}
+      initContainers:
+        {{- include "meditrack.initWait" (dict "name" "redis" "port" "6379") | nindent 8 }}
+        {{- include "meditrack.initWait" (dict "name" "medical-service" "port" "4002") | nindent 8 }}
+        {{- include "meditrack.initWait" (dict "name" "health-service" "port" "4003") | nindent 8 }}
+      containers:
+        - name: {{ .Values.aiService.name }}
+          image: {{ include "meditrack.image" (dict "registry" .Values.global.registry "image" .Values.aiService.image "tag" .Values.global.imageTag) }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.aiService.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: meditrack-config
+          env:
+            - name: PORT
+              value: {{ .Values.aiService.port | quote }}
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: meditrack-secrets
+                  key: GEMINI_API_KEY
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: meditrack-secrets
+                  key: GROQ_API_KEY
+            - name: HUGGINGFACE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: meditrack-secrets
+                  key: HUGGINGFACE_API_KEY
+          resources:
+            requests:
+              cpu: {{ .Values.aiService.resources.requests.cpu }}
+              memory: {{ .Values.aiService.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.aiService.resources.limits.cpu }}
+              memory: {{ .Values.aiService.resources.limits.memory }}
+          {{- include "meditrack.appProbes" (dict "port" .Values.aiService.port) | nindent 10 }}
+          {{- include "meditrack.lifecycle" . | nindent 10 }}
+          {{- include "meditrack.containerSecurityContext" . | nindent 10 }}

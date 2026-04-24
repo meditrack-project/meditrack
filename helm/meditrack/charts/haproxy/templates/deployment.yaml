@@ -1,0 +1,67 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — HAProxy Deployment (runs inside K8s for config management)
+# Environment: both
+# Namespace: meditrack-infra
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haproxy
+  namespace: {{ .Values.namespace.infra }}
+  labels:
+    {{- include "haproxy.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.haproxy.replicas }}
+  selector:
+    matchLabels:
+      app: haproxy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        {{- include "haproxy.labels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: haproxy
+          image: haproxy:2.8-alpine
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+            - containerPort: 8404
+              protocol: TCP
+          volumeMounts:
+            - name: haproxy-config
+              mountPath: /usr/local/etc/haproxy/haproxy.cfg
+              subPath: haproxy.cfg
+              readOnly: true
+          resources:
+            requests:
+              cpu: {{ .Values.haproxy.resources.requests.cpu }}
+              memory: {{ .Values.haproxy.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.haproxy.resources.limits.cpu }}
+              memory: {{ .Values.haproxy.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8405
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8405
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: haproxy-config
+          configMap:
+            name: haproxy-config

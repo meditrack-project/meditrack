@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.healthService.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "health-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.healthService.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.healthService.name }}
+  {{- include "meditrack.deploymentStrategy" . | nindent 2 }}
+  template:
+    metadata:
+      labels:
+        {{- include "health-service.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: meditrack-app-sa
+      terminationGracePeriodSeconds: 30
+      {{- include "meditrack.appSecurityContext" . | nindent 6 }}
+      {{- include "meditrack.podAntiAffinity" (dict "name" .Values.healthService.name) | nindent 6 }}
+      initContainers:
+        {{- include "meditrack.initWait" (dict "name" "health-db" "port" "5432") | nindent 8 }}
+        {{- include "meditrack.initWait" (dict "name" "redis" "port" "6379") | nindent 8 }}
+      containers:
+        - name: {{ .Values.healthService.name }}
+          image: {{ include "meditrack.image" (dict "registry" .Values.global.registry "image" .Values.healthService.image "tag" .Values.global.imageTag) }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.healthService.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: meditrack-config
+          env:
+            - name: PORT
+              value: {{ .Values.healthService.port | quote }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: meditrack-db-secrets
+                  key: HEALTH_DB_URL
+          resources:
+            requests:
+              cpu: {{ .Values.healthService.resources.requests.cpu }}
+              memory: {{ .Values.healthService.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.healthService.resources.limits.cpu }}
+              memory: {{ .Values.healthService.resources.limits.memory }}
+          {{- include "meditrack.appProbes" (dict "port" .Values.healthService.port) | nindent 10 }}
+          {{- include "meditrack.lifecycle" . | nindent 10 }}
+          {{- include "meditrack.containerSecurityContext" . | nindent 10 }}

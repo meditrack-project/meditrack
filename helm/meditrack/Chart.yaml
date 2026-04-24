@@ -1,0 +1,44 @@
+# ─────────────────────────────────────────────────────────────
+# MediTrack — Umbrella Helm chart listing all subcharts
+# Environment: both (dev + prod)
+# Namespace: meditrack-dev | meditrack-prod
+# Phase: 2 — Kubernetes + Helm Implementation
+# ─────────────────────────────────────────────────────────────
+apiVersion: v2
+name: meditrack
+description: MediTrack — Production-grade personal health tracking platform
+type: application
+version: 2.0.0
+appVersion: "2.0.0"
+
+dependencies:
+  - name: user-service
+    version: 2.0.0
+    repository: "file://charts/user-service"
+  - name: medical-service
+    version: 2.0.0
+    repository: "file://charts/medical-service"
+  - name: health-service
+    version: 2.0.0
+    repository: "file://charts/health-service"
+  - name: ai-service
+    version: 2.0.0
+    repository: "file://charts/ai-service"
+  - name: frontend
+    version: 2.0.0
+    repository: "file://charts/frontend"
+  - name: user-db
+    version: 2.0.0
+    repository: "file://charts/user-db"
+  - name: medical-db
+    version: 2.0.0
+    repository: "file://charts/medical-db"
+  - name: health-db
+    version: 2.0.0
+    repository: "file://charts/health-db"
+  - name: redis
+    version: 2.0.0
+    repository: "file://charts/redis"
+  - name: haproxy
+    version: 2.0.0
+    repository: "file://charts/haproxy"
