@@ -1,25 +1,32 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.healthDb.name }}
+  name: {{ .Values.global.healthDb.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "health-db.labels" . | nindent 4 }}
+    app: {{ .Values.global.healthDb.name }}
+    app.kubernetes.io/name: {{ .Values.global.healthDb.name }}
+    app.kubernetes.io/part-of: meditrack-db
 spec:
   replicas: 1
-  serviceName: {{ .Values.healthDb.name }}-headless
+  serviceName: {{ .Values.global.healthDb.name }}-headless
   podManagementPolicy: OrderedReady
   selector:
     matchLabels:
-      app: {{ .Values.healthDb.name }}
+      app: {{ .Values.global.healthDb.name }}
   template:
     metadata:
       labels:
-        {{- include "health-db.labels" . | nindent 8 }}
+        app: {{ .Values.global.healthDb.name }}
+        app.kubernetes.io/name: {{ .Values.global.healthDb.name }}
+        app.kubernetes.io/part-of: meditrack-db
     spec:
       serviceAccountName: meditrack-db-sa
       terminationGracePeriodSeconds: 60
-      {{- include "meditrack.dbSecurityContext" . | nindent 6 }}
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
       initContainers:
         - name: init-permissions
           image: busybox:1.36
@@ -51,7 +58,7 @@ spec:
               protocol: TCP
           env:
             - name: POSTGRES_DB
-              value: {{ .Values.healthDb.dbName }}
+              value: {{ .Values.global.healthDb.dbName }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -69,11 +76,11 @@ spec:
               mountPath: /var/lib/postgresql/data
           resources:
             requests:
-              cpu: {{ .Values.healthDb.resources.requests.cpu }}
-              memory: {{ .Values.healthDb.resources.requests.memory }}
+              cpu: {{ .Values.global.healthDb.resources.requests.cpu }}
+              memory: {{ .Values.global.healthDb.resources.requests.memory }}
             limits:
-              cpu: {{ .Values.healthDb.resources.limits.cpu }}
-              memory: {{ .Values.healthDb.resources.limits.memory }}
+              cpu: {{ .Values.global.healthDb.resources.limits.cpu }}
+              memory: {{ .Values.global.healthDb.resources.limits.memory }}
           livenessProbe:
             exec:
               command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
@@ -93,8 +100,8 @@ spec:
     - metadata:
         name: data
       spec:
-        storageClassName: {{ .Values.nfs.storageClass }}
+        storageClassName: {{ .Values.global.nfs.storageClass }}
         accessModes: [ReadWriteOnce]
         resources:
           requests:
-            storage: {{ .Values.healthDb.storage }}
+            storage: {{ .Values.global.healthDb.storage }}

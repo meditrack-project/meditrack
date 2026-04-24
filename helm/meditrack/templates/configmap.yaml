@@ -1,9 +1,3 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — Application ConfigMap (non-sensitive config)
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,10 +6,10 @@ metadata:
   labels:
     {{- include "meditrack.labels" . | nindent 4 }}
 data:
-  ENVIRONMENT: {{ .Values.config.environment | quote }}
-  LOG_LEVEL: {{ .Values.config.logLevel | quote }}
-  REDIS_URL: {{ .Values.config.redisUrl | quote }}
-  MEDICAL_SERVICE_URL: {{ .Values.config.medicalServiceUrl | quote }}
-  HEALTH_SERVICE_URL: {{ .Values.config.healthServiceUrl | quote }}
-  USER_SERVICE_URL: {{ .Values.config.userServiceUrl | quote }}
-  ALLOWED_ORIGINS: {{ .Values.config.allowedOrigins | quote }}
+  ENVIRONMENT: {{ .Values.global.config.environment | quote }}
+  LOG_LEVEL: {{ .Values.global.config.logLevel | quote }}
+  REDIS_URL: {{ .Values.global.config.redisUrl | quote }}
+  MEDICAL_SERVICE_URL: {{ .Values.global.config.medicalServiceUrl | quote }}
+  HEALTH_SERVICE_URL: {{ .Values.global.config.healthServiceUrl | quote }}
+  USER_SERVICE_URL: {{ .Values.global.config.userServiceUrl | quote }}
+  ALLOWED_ORIGINS: {{ .Values.global.config.allowedOrigins | quote }}

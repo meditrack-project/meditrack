@@ -1,13 +1,7 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — NFS StorageClass for dynamic PostgreSQL provisioning
-# Environment: cluster-scoped
-# Namespace: N/A
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ .Values.nfs.storageClass }}
+  name: {{ .Values.global.nfs.storageClass }}
   labels:
     {{- include "meditrack.labels" . | nindent 4 }}
 provisioner: cluster.local/nfs-provisioner

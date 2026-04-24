@@ -1,15 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.aiService.name }}
+  name: {{ .Values.global.aiService.name }}
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "ai-service.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   selector:
-    app: {{ .Values.aiService.name }}
+    app: {{ .Values.global.aiService.name }}
   ports:
-    - port: {{ .Values.aiService.port }}
-      targetPort: {{ .Values.aiService.port }}
-      protocol: TCP
+    - port: {{ .Values.global.aiService.port }}
+      targetPort: {{ .Values.global.aiService.port }}

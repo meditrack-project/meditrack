@@ -1,19 +1,12 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — user-service PDB (prod only)
-# Environment: prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
-{{- if .Values.userService.pdb.enabled }}
+{{- if .Values.global.userService.pdb.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .Values.userService.name }}-pdb
+  name: {{ .Values.global.userService.name }}-pdb
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "user-service.labels" . | nindent 4 }}
 spec:
-  minAvailable: {{ .Values.userService.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.userService.pdb.minAvailable }}
   selector:
     matchLabels:
-      app: {{ .Values.userService.name }}
+      app: {{ .Values.global.userService.name }}
 {{- end }}

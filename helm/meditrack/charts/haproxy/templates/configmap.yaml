@@ -1,16 +1,11 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — HAProxy ConfigMap (haproxy.cfg content)
-# Environment: both
-# Namespace: meditrack-infra
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: haproxy-config
-  namespace: {{ .Values.namespace.infra }}
+  namespace: {{ .Values.global.namespace.infra }}
   labels:
-    {{- include "haproxy.labels" . | nindent 4 }}
+    app: haproxy
+    app.kubernetes.io/name: haproxy
 data:
   haproxy.cfg: |
     global
@@ -35,8 +30,8 @@ data:
 
     frontend meditrack_https
       bind *:443 ssl crt /etc/ssl/certs/meditrack.pem
-      acl is_prod hdr(host) -i {{ .Values.haproxy.hosts.prod }}
-      acl is_dev  hdr(host) -i {{ .Values.haproxy.hosts.dev }}
+      acl is_prod hdr(host) -i {{ .Values.global.haproxy.hosts.prod }}
+      acl is_dev  hdr(host) -i {{ .Values.global.haproxy.hosts.dev }}
       use_backend k8s_prod if is_prod
       use_backend k8s_dev  if is_dev
       default_backend k8s_prod
@@ -44,14 +39,14 @@ data:
     backend k8s_prod
       balance roundrobin
       option httpchk GET /health
-      server worker1 172.31.79.137:{{ .Values.haproxy.nodePorts.prod }} check
-      server worker2 172.31.28.90:{{ .Values.haproxy.nodePorts.prod }} check
+      server worker1 172.31.79.137:{{ .Values.global.haproxy.nodePorts.prod }} check
+      server worker2 172.31.28.90:{{ .Values.global.haproxy.nodePorts.prod }} check
 
     backend k8s_dev
       balance roundrobin
       option httpchk GET /health
-      server worker1 172.31.79.137:{{ .Values.haproxy.nodePorts.dev }} check
-      server worker2 172.31.28.90:{{ .Values.haproxy.nodePorts.dev }} check
+      server worker1 172.31.79.137:{{ .Values.global.haproxy.nodePorts.dev }} check
+      server worker2 172.31.28.90:{{ .Values.global.haproxy.nodePorts.dev }} check
 
     frontend stats
       bind *:8404

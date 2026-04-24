@@ -1,46 +1,63 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — user-service Deployment
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.userService.name }}
+  name: {{ .Values.global.userService.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "user-service.labels" . | nindent 4 }}
+    app: {{ .Values.global.userService.name }}
+    app.kubernetes.io/name: {{ .Values.global.userService.name }}
+    app.kubernetes.io/part-of: meditrack
+    app.kubernetes.io/managed-by: helm
+    environment: {{ .Values.global.environment }}
 spec:
-  replicas: {{ .Values.userService.replicas }}
+  replicas: {{ .Values.global.userService.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.userService.name }}
-  {{- include "meditrack.deploymentStrategy" . | nindent 2 }}
+      app: {{ .Values.global.userService.name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
-        {{- include "user-service.labels" . | nindent 8 }}
+        app: {{ .Values.global.userService.name }}
+        app.kubernetes.io/name: {{ .Values.global.userService.name }}
+        app.kubernetes.io/part-of: meditrack
+        environment: {{ .Values.global.environment }}
     spec:
       serviceAccountName: meditrack-app-sa
       terminationGracePeriodSeconds: 30
-      {{- include "meditrack.appSecurityContext" . | nindent 6 }}
-      {{- include "meditrack.podAntiAffinity" (dict "name" .Values.userService.name) | nindent 6 }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: {{ .Values.global.userService.name }}
+                topologyKey: kubernetes.io/hostname
       initContainers:
         {{- include "meditrack.initWait" (dict "name" "user-db" "port" "5432") | nindent 8 }}
       containers:
-        - name: {{ .Values.userService.name }}
-          image: {{ include "meditrack.image" (dict "registry" .Values.global.registry "image" .Values.userService.image "tag" .Values.global.imageTag) }}
+        - name: {{ .Values.global.userService.name }}
+          image: {{ .Values.global.registry }}/{{ .Values.global.userService.image }}:{{ .Values.global.imageTag }}
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
-            - containerPort: {{ .Values.userService.port }}
+            - containerPort: {{ .Values.global.userService.port }}
               protocol: TCP
           envFrom:
             - configMapRef:
                 name: meditrack-config
           env:
             - name: PORT
-              value: {{ .Values.userService.port | quote }}
+              value: {{ .Values.global.userService.port | quote }}
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -58,11 +75,11 @@ spec:
                   key: JWT_PUBLIC_KEY_B64
           resources:
             requests:
-              cpu: {{ .Values.userService.resources.requests.cpu }}
-              memory: {{ .Values.userService.resources.requests.memory }}
+              cpu: {{ .Values.global.userService.resources.requests.cpu }}
+              memory: {{ .Values.global.userService.resources.requests.memory }}
             limits:
-              cpu: {{ .Values.userService.resources.limits.cpu }}
-              memory: {{ .Values.userService.resources.limits.memory }}
-          {{- include "meditrack.appProbes" (dict "port" .Values.userService.port) | nindent 10 }}
+              cpu: {{ .Values.global.userService.resources.limits.cpu }}
+              memory: {{ .Values.global.userService.resources.limits.memory }}
+          {{- include "meditrack.appProbes" (dict "port" .Values.global.userService.port) | nindent 10 }}
           {{- include "meditrack.lifecycle" . | nindent 10 }}
           {{- include "meditrack.containerSecurityContext" . | nindent 10 }}

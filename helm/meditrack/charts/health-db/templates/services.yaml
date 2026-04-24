@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.healthDb.name }}-headless
+  name: {{ .Values.global.healthDb.name }}-headless
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "health-db.labels" . | nindent 4 }}
+    app: {{ .Values.global.healthDb.name }}
+    app.kubernetes.io/name: {{ .Values.global.healthDb.name }}
+    app.kubernetes.io/part-of: meditrack-db
 spec:
   type: ClusterIP
   clusterIP: None
   selector:
-    app: {{ .Values.healthDb.name }}
+    app: {{ .Values.global.healthDb.name }}
   ports:
     - port: 5432
       targetPort: 5432
@@ -17,14 +19,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.healthDb.name }}
+  name: {{ .Values.global.healthDb.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "health-db.labels" . | nindent 4 }}
+    app: {{ .Values.global.healthDb.name }}
+    app.kubernetes.io/name: {{ .Values.global.healthDb.name }}
+    app.kubernetes.io/part-of: meditrack-db
 spec:
   type: ClusterIP
   selector:
-    app: {{ .Values.healthDb.name }}
+    app: {{ .Values.global.healthDb.name }}
   ports:
     - port: 5432
       targetPort: 5432

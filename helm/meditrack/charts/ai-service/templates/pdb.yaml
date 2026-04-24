@@ -1,14 +1,12 @@
-{{- if .Values.aiService.pdb.enabled }}
+{{- if .Values.global.aiService.pdb.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .Values.aiService.name }}-pdb
+  name: {{ .Values.global.aiService.name }}-pdb
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "ai-service.labels" . | nindent 4 }}
 spec:
-  minAvailable: {{ .Values.aiService.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.aiService.pdb.minAvailable }}
   selector:
     matchLabels:
-      app: {{ .Values.aiService.name }}
+      app: {{ .Values.global.aiService.name }}
 {{- end }}

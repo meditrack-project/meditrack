@@ -1,31 +1,32 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — user-db PostgreSQL StatefulSet with NFS dynamic provisioning
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.userDb.name }}
+  name: {{ .Values.global.userDb.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "user-db.labels" . | nindent 4 }}
+    app: {{ .Values.global.userDb.name }}
+    app.kubernetes.io/name: {{ .Values.global.userDb.name }}
+    app.kubernetes.io/part-of: meditrack-db
 spec:
   replicas: 1
-  serviceName: {{ .Values.userDb.name }}-headless
+  serviceName: {{ .Values.global.userDb.name }}-headless
   podManagementPolicy: OrderedReady
   selector:
     matchLabels:
-      app: {{ .Values.userDb.name }}
+      app: {{ .Values.global.userDb.name }}
   template:
     metadata:
       labels:
-        {{- include "user-db.labels" . | nindent 8 }}
+        app: {{ .Values.global.userDb.name }}
+        app.kubernetes.io/name: {{ .Values.global.userDb.name }}
+        app.kubernetes.io/part-of: meditrack-db
     spec:
       serviceAccountName: meditrack-db-sa
       terminationGracePeriodSeconds: 60
-      {{- include "meditrack.dbSecurityContext" . | nindent 6 }}
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
       initContainers:
         - name: init-permissions
           image: busybox:1.36
@@ -57,7 +58,7 @@ spec:
               protocol: TCP
           env:
             - name: POSTGRES_DB
-              value: {{ .Values.userDb.dbName }}
+              value: {{ .Values.global.userDb.dbName }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -75,11 +76,11 @@ spec:
               mountPath: /var/lib/postgresql/data
           resources:
             requests:
-              cpu: {{ .Values.userDb.resources.requests.cpu }}
-              memory: {{ .Values.userDb.resources.requests.memory }}
+              cpu: {{ .Values.global.userDb.resources.requests.cpu }}
+              memory: {{ .Values.global.userDb.resources.requests.memory }}
             limits:
-              cpu: {{ .Values.userDb.resources.limits.cpu }}
-              memory: {{ .Values.userDb.resources.limits.memory }}
+              cpu: {{ .Values.global.userDb.resources.limits.cpu }}
+              memory: {{ .Values.global.userDb.resources.limits.memory }}
           livenessProbe:
             exec:
               command:
@@ -105,9 +106,9 @@ spec:
     - metadata:
         name: data
       spec:
-        storageClassName: {{ .Values.nfs.storageClass }}
+        storageClassName: {{ .Values.global.nfs.storageClass }}
         accessModes:
           - ReadWriteOnce
         resources:
           requests:
-            storage: {{ .Values.userDb.storage }}
+            storage: {{ .Values.global.userDb.storage }}

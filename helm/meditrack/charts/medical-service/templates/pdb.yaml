@@ -1,14 +1,12 @@
-{{- if .Values.medicalService.pdb.enabled }}
+{{- if .Values.global.medicalService.pdb.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .Values.medicalService.name }}-pdb
+  name: {{ .Values.global.medicalService.name }}-pdb
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "medical-service.labels" . | nindent 4 }}
 spec:
-  minAvailable: {{ .Values.medicalService.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.medicalService.pdb.minAvailable }}
   selector:
     matchLabels:
-      app: {{ .Values.medicalService.name }}
+      app: {{ .Values.global.medicalService.name }}
 {{- end }}

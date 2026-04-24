@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.redis.name }}
+  name: {{ .Values.global.redis.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "redis.labels" . | nindent 4 }}
+    app: {{ .Values.global.redis.name }}
+    app.kubernetes.io/name: {{ .Values.global.redis.name }}
+    app.kubernetes.io/part-of: meditrack
 spec:
   type: ClusterIP
   selector:
-    app: {{ .Values.redis.name }}
+    app: {{ .Values.global.redis.name }}
   ports:
-    - port: {{ .Values.redis.port }}
-      targetPort: {{ .Values.redis.port }}
+    - port: {{ .Values.global.redis.port }}
+      targetPort: {{ .Values.global.redis.port }}
       protocol: TCP

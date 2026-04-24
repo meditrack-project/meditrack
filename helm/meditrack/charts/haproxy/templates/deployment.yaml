@@ -1,18 +1,13 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — HAProxy Deployment (runs inside K8s for config management)
-# Environment: both
-# Namespace: meditrack-infra
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: haproxy
-  namespace: {{ .Values.namespace.infra }}
+  namespace: {{ .Values.global.namespace.infra }}
   labels:
-    {{- include "haproxy.labels" . | nindent 4 }}
+    app: haproxy
+    app.kubernetes.io/name: haproxy
 spec:
-  replicas: {{ .Values.haproxy.replicas }}
+  replicas: {{ .Values.global.haproxy.replicas }}
   selector:
     matchLabels:
       app: haproxy
@@ -24,7 +19,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "haproxy.labels" . | nindent 8 }}
+        app: haproxy
     spec:
       terminationGracePeriodSeconds: 30
       containers:
@@ -44,11 +39,11 @@ spec:
               readOnly: true
           resources:
             requests:
-              cpu: {{ .Values.haproxy.resources.requests.cpu }}
-              memory: {{ .Values.haproxy.resources.requests.memory }}
+              cpu: {{ .Values.global.haproxy.resources.requests.cpu }}
+              memory: {{ .Values.global.haproxy.resources.requests.memory }}
             limits:
-              cpu: {{ .Values.haproxy.resources.limits.cpu }}
-              memory: {{ .Values.haproxy.resources.limits.memory }}
+              cpu: {{ .Values.global.haproxy.resources.limits.cpu }}
+              memory: {{ .Values.global.haproxy.resources.limits.memory }}
           livenessProbe:
             httpGet:
               path: /health

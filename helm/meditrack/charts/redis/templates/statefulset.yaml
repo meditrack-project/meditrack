@@ -1,26 +1,24 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — Redis StatefulSet (emptyDir for dev, hostPath for prod)
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.redis.name }}
+  name: {{ .Values.global.redis.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "redis.labels" . | nindent 4 }}
+    app: {{ .Values.global.redis.name }}
+    app.kubernetes.io/name: {{ .Values.global.redis.name }}
+    app.kubernetes.io/part-of: meditrack
 spec:
   replicas: 1
-  serviceName: {{ .Values.redis.name }}
+  serviceName: {{ .Values.global.redis.name }}
   selector:
     matchLabels:
-      app: {{ .Values.redis.name }}
+      app: {{ .Values.global.redis.name }}
   template:
     metadata:
       labels:
-        {{- include "redis.labels" . | nindent 8 }}
+        app: {{ .Values.global.redis.name }}
+        app.kubernetes.io/name: {{ .Values.global.redis.name }}
+        app.kubernetes.io/part-of: meditrack
     spec:
       serviceAccountName: meditrack-redis-sa
       terminationGracePeriodSeconds: 30
@@ -29,9 +27,9 @@ spec:
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 999
-      {{- if .Values.redis.nodeSelector }}
+      {{- if .Values.global.redis.nodeSelector }}
       nodeSelector:
-        {{- toYaml .Values.redis.nodeSelector | nindent 8 }}
+        {{- toYaml .Values.global.redis.nodeSelector | nindent 8 }}
       {{- end }}
       containers:
         - name: redis
@@ -47,18 +45,18 @@ spec:
             - --appendfsync
             - everysec
           ports:
-            - containerPort: {{ .Values.redis.port }}
+            - containerPort: {{ .Values.global.redis.port }}
               protocol: TCP
           volumeMounts:
             - name: redis-data
               mountPath: /data
           resources:
             requests:
-              cpu: {{ .Values.redis.resources.requests.cpu }}
-              memory: {{ .Values.redis.resources.requests.memory }}
+              cpu: {{ .Values.global.redis.resources.requests.cpu }}
+              memory: {{ .Values.global.redis.resources.requests.memory }}
             limits:
-              cpu: {{ .Values.redis.resources.limits.cpu }}
-              memory: {{ .Values.redis.resources.limits.memory }}
+              cpu: {{ .Values.global.redis.resources.limits.cpu }}
+              memory: {{ .Values.global.redis.resources.limits.memory }}
           livenessProbe:
             exec:
               command: [redis-cli, ping]
@@ -76,9 +74,9 @@ spec:
           {{- include "meditrack.containerSecurityContext" . | nindent 10 }}
       volumes:
         - name: redis-data
-          {{- if eq .Values.redis.storage.type "hostPath" }}
+          {{- if eq .Values.global.redis.storage.type "hostPath" }}
           hostPath:
-            path: {{ .Values.redis.storage.hostPath }}
+            path: {{ .Values.global.redis.storage.hostPath }}
             type: DirectoryOrCreate
           {{- else }}
           emptyDir: {}

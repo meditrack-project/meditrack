@@ -1,25 +1,23 @@
-{{- if .Values.aiService.hpa.enabled }}
+{{- if .Values.global.aiService.hpa.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Values.aiService.name }}-hpa
+  name: {{ .Values.global.aiService.name }}-hpa
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "ai-service.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Values.aiService.name }}
-  minReplicas: {{ .Values.aiService.hpa.minReplicas }}
-  maxReplicas: {{ .Values.aiService.hpa.maxReplicas }}
+    name: {{ .Values.global.aiService.name }}
+  minReplicas: {{ .Values.global.aiService.hpa.minReplicas }}
+  maxReplicas: {{ .Values.global.aiService.hpa.maxReplicas }}
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: {{ .Values.aiService.hpa.cpuUtilization }}
+          averageUtilization: {{ .Values.global.aiService.hpa.cpuUtilization }}
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60

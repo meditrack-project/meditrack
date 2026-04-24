@@ -1,14 +1,12 @@
-{{- if .Values.redis.pdb.enabled }}
+{{- if .Values.global.redis.pdb.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .Values.redis.name }}-pdb
+  name: {{ .Values.global.redis.name }}-pdb
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "redis.labels" . | nindent 4 }}
 spec:
-  minAvailable: {{ .Values.redis.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.redis.pdb.minAvailable }}
   selector:
     matchLabels:
-      app: {{ .Values.redis.name }}
+      app: {{ .Values.global.redis.name }}
 {{- end }}

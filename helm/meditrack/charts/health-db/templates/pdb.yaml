@@ -1,14 +1,12 @@
-{{- if .Values.healthDb.pdb.enabled }}
+{{- if .Values.global.healthDb.pdb.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .Values.healthDb.name }}-pdb
+  name: {{ .Values.global.healthDb.name }}-pdb
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "health-db.labels" . | nindent 4 }}
 spec:
-  minAvailable: {{ .Values.healthDb.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.healthDb.pdb.minAvailable }}
   selector:
     matchLabels:
-      app: {{ .Values.healthDb.name }}
+      app: {{ .Values.global.healthDb.name }}
 {{- end }}

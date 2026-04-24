@@ -1,10 +1,4 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — Public HTTPRoutes (no JWT required)
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
-{{- if .Values.gateway.enabled }}
+{{- if .Values.global.gateway.enabled }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -15,41 +9,37 @@ metadata:
 spec:
   parentRefs:
     - name: meditrack-gateway
-      namespace: {{ .Values.namespace.infra }}
+      namespace: {{ .Values.global.namespace.infra }}
   rules:
-    # POST /api/auth/register
     - matches:
         - path:
             type: Exact
             value: /api/auth/register
           method: POST
       backendRefs:
-        - name: {{ .Values.userService.name }}
-          port: {{ .Values.userService.port }}
-    # POST /api/auth/login
+        - name: {{ .Values.global.userService.name }}
+          port: {{ .Values.global.userService.port }}
     - matches:
         - path:
             type: Exact
             value: /api/auth/login
           method: POST
       backendRefs:
-        - name: {{ .Values.userService.name }}
-          port: {{ .Values.userService.port }}
-    # GET /api/auth/jwks
+        - name: {{ .Values.global.userService.name }}
+          port: {{ .Values.global.userService.port }}
     - matches:
         - path:
             type: Exact
             value: /api/auth/jwks
           method: GET
       backendRefs:
-        - name: {{ .Values.userService.name }}
-          port: {{ .Values.userService.port }}
-    # GET /* → frontend (catch-all, lowest priority)
+        - name: {{ .Values.global.userService.name }}
+          port: {{ .Values.global.userService.port }}
     - matches:
         - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: {{ .Values.frontend.name }}
-          port: {{ .Values.frontend.port }}
+        - name: {{ .Values.global.frontend.name }}
+          port: {{ .Values.global.frontend.port }}
 {{- end }}

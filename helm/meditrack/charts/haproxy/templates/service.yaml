@@ -1,16 +1,11 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — HAProxy NodePort Services for external access
-# Environment: both
-# Namespace: meditrack-infra
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: Service
 metadata:
   name: meditrack-gateway-nodeport
-  namespace: {{ .Values.namespace.infra }}
+  namespace: {{ .Values.global.namespace.infra }}
   labels:
-    {{- include "haproxy.labels" . | nindent 4 }}
+    app: haproxy
+    app.kubernetes.io/name: haproxy
 spec:
   type: NodePort
   selector:
@@ -19,12 +14,12 @@ spec:
     - name: http-prod
       port: 80
       targetPort: 80
-      nodePort: {{ .Values.haproxy.nodePorts.prod }}
+      nodePort: {{ .Values.global.haproxy.nodePorts.prod }}
     - name: http-dev
       port: 81
       targetPort: 80
-      nodePort: {{ .Values.haproxy.nodePorts.dev }}
+      nodePort: {{ .Values.global.haproxy.nodePorts.dev }}
     - name: stats
       port: 8404
       targetPort: 8404
-      nodePort: {{ .Values.haproxy.nodePorts.stats }}
+      nodePort: {{ .Values.global.haproxy.nodePorts.stats }}

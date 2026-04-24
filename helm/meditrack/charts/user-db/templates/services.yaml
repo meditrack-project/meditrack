@@ -1,20 +1,17 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — user-db Services (headless + ClusterIP)
-# Environment: both
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.userDb.name }}-headless
+  name: {{ .Values.global.userDb.name }}-headless
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "user-db.labels" . | nindent 4 }}
+    app: {{ .Values.global.userDb.name }}
+    app.kubernetes.io/name: {{ .Values.global.userDb.name }}
+    app.kubernetes.io/part-of: meditrack-db
 spec:
   type: ClusterIP
   clusterIP: None
   selector:
-    app: {{ .Values.userDb.name }}
+    app: {{ .Values.global.userDb.name }}
   ports:
     - port: 5432
       targetPort: 5432
@@ -23,14 +20,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.userDb.name }}
+  name: {{ .Values.global.userDb.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "user-db.labels" . | nindent 4 }}
+    app: {{ .Values.global.userDb.name }}
+    app.kubernetes.io/name: {{ .Values.global.userDb.name }}
+    app.kubernetes.io/part-of: meditrack-db
 spec:
   type: ClusterIP
   selector:
-    app: {{ .Values.userDb.name }}
+    app: {{ .Values.global.userDb.name }}
   ports:
     - port: 5432
       targetPort: 5432

@@ -1,37 +1,31 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — Namespace definitions for all environments
-# Environment: cluster-scoped
-# Namespace: N/A (creates namespaces)
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ .Values.namespace.prod }}
+  name: {{ .Values.global.namespace.prod }}
   labels:
     {{- include "meditrack.labels" . | nindent 4 }}
-    name: {{ .Values.namespace.prod }}
+    name: {{ .Values.global.namespace.prod }}
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ .Values.namespace.dev }}
+  name: {{ .Values.global.namespace.dev }}
   labels:
     {{- include "meditrack.labels" . | nindent 4 }}
-    name: {{ .Values.namespace.dev }}
+    name: {{ .Values.global.namespace.dev }}
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ .Values.namespace.infra }}
+  name: {{ .Values.global.namespace.infra }}
   labels:
     {{- include "meditrack.labels" . | nindent 4 }}
-    name: {{ .Values.namespace.infra }}
+    name: {{ .Values.global.namespace.infra }}
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ .Values.namespace.monitoring }}
+  name: {{ .Values.global.namespace.monitoring }}
   labels:
     {{- include "meditrack.labels" . | nindent 4 }}
-    name: {{ .Values.namespace.monitoring }}
+    name: {{ .Values.global.namespace.monitoring }}

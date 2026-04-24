@@ -1,20 +1,17 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — user-service ClusterIP Service
-# Environment: both
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.userService.name }}
+  name: {{ .Values.global.userService.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "user-service.labels" . | nindent 4 }}
+    app: {{ .Values.global.userService.name }}
+    app.kubernetes.io/name: {{ .Values.global.userService.name }}
+    app.kubernetes.io/part-of: meditrack
 spec:
   type: ClusterIP
   selector:
-    app: {{ .Values.userService.name }}
+    app: {{ .Values.global.userService.name }}
   ports:
-    - port: {{ .Values.userService.port }}
-      targetPort: {{ .Values.userService.port }}
+    - port: {{ .Values.global.userService.port }}
+      targetPort: {{ .Values.global.userService.port }}
       protocol: TCP

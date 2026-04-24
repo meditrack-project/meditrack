@@ -1,36 +1,29 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — user-service HPA (prod only)
-# Environment: prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
-{{- if .Values.userService.hpa.enabled }}
+{{- if .Values.global.userService.hpa.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Values.userService.name }}-hpa
+  name: {{ .Values.global.userService.name }}-hpa
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "user-service.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Values.userService.name }}
-  minReplicas: {{ .Values.userService.hpa.minReplicas }}
-  maxReplicas: {{ .Values.userService.hpa.maxReplicas }}
+    name: {{ .Values.global.userService.name }}
+  minReplicas: {{ .Values.global.userService.hpa.minReplicas }}
+  maxReplicas: {{ .Values.global.userService.hpa.maxReplicas }}
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: {{ .Values.userService.hpa.cpuUtilization }}
+          averageUtilization: {{ .Values.global.userService.hpa.cpuUtilization }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: {{ .Values.userService.hpa.memoryUtilization }}
+          averageUtilization: {{ .Values.global.userService.hpa.memoryUtilization }}
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60

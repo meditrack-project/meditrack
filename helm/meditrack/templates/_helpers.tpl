@@ -16,15 +16,6 @@ environment: {{ .Values.global.environment }}
 {{- end -}}
 
 {{/*
-Service-specific labels
-*/}}
-{{- define "meditrack.serviceLabels" -}}
-app: {{ .name }}
-app.kubernetes.io/name: {{ .name }}
-{{ include "meditrack.labels" .context }}
-{{- end -}}
-
-{{/*
 Full image path helper
 */}}
 {{- define "meditrack.image" -}}
@@ -61,36 +52,14 @@ Init container: wait for a service on a specific port
 {{- end -}}
 
 {{/*
-Standard security context for application pods (FastAPI)
+Standard deployment strategy
 */}}
-{{- define "meditrack.appSecurityContext" -}}
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-{{- end -}}
-
-{{/*
-Standard security context for frontend pods (Nginx)
-*/}}
-{{- define "meditrack.frontendSecurityContext" -}}
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 101
-  runAsGroup: 101
-  fsGroup: 101
-{{- end -}}
-
-{{/*
-Standard security context for PostgreSQL pods
-*/}}
-{{- define "meditrack.dbSecurityContext" -}}
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 999
-  runAsGroup: 999
-  fsGroup: 999
+{{- define "meditrack.deploymentStrategy" -}}
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
 {{- end -}}
 
 {{/*
@@ -104,29 +73,13 @@ securityContext:
 {{- end -}}
 
 {{/*
-Standard deployment strategy
+Standard lifecycle hook
 */}}
-{{- define "meditrack.deploymentStrategy" -}}
-strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 0
-{{- end -}}
-
-{{/*
-Standard pod anti-affinity
-*/}}
-{{- define "meditrack.podAntiAffinity" -}}
-affinity:
-  podAntiAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchLabels:
-              app: {{ .name }}
-          topologyKey: kubernetes.io/hostname
+{{- define "meditrack.lifecycle" -}}
+lifecycle:
+  preStop:
+    exec:
+      command: ["/bin/sh", "-c", "sleep 5"]
 {{- end -}}
 
 {{/*
@@ -154,14 +107,4 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 3
   failureThreshold: 3
-{{- end -}}
-
-{{/*
-Standard lifecycle hook
-*/}}
-{{- define "meditrack.lifecycle" -}}
-lifecycle:
-  preStop:
-    exec:
-      command: ["/bin/sh", "-c", "sleep 5"]
 {{- end -}}

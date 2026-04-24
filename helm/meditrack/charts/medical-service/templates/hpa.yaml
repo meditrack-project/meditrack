@@ -1,31 +1,29 @@
-{{- if .Values.medicalService.hpa.enabled }}
+{{- if .Values.global.medicalService.hpa.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Values.medicalService.name }}-hpa
+  name: {{ .Values.global.medicalService.name }}-hpa
   namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "medical-service.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Values.medicalService.name }}
-  minReplicas: {{ .Values.medicalService.hpa.minReplicas }}
-  maxReplicas: {{ .Values.medicalService.hpa.maxReplicas }}
+    name: {{ .Values.global.medicalService.name }}
+  minReplicas: {{ .Values.global.medicalService.hpa.minReplicas }}
+  maxReplicas: {{ .Values.global.medicalService.hpa.maxReplicas }}
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: {{ .Values.medicalService.hpa.cpuUtilization }}
+          averageUtilization: {{ .Values.global.medicalService.hpa.cpuUtilization }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: {{ .Values.medicalService.hpa.memoryUtilization }}
+          averageUtilization: {{ .Values.global.medicalService.hpa.memoryUtilization }}
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 60

@@ -1,10 +1,4 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — Protected HTTPRoutes (JWT required via SecurityPolicy)
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
-{{- if .Values.gateway.enabled }}
+{{- if .Values.global.gateway.enabled }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -15,9 +9,8 @@ metadata:
 spec:
   parentRefs:
     - name: meditrack-gateway
-      namespace: {{ .Values.namespace.infra }}
+      namespace: {{ .Values.global.namespace.infra }}
   rules:
-    # /api/auth/me, /api/auth/logout (protected auth routes)
     - matches:
         - path:
             type: PathPrefix
@@ -26,38 +19,34 @@ spec:
             type: PathPrefix
             value: /api/auth/logout
       backendRefs:
-        - name: {{ .Values.userService.name }}
-          port: {{ .Values.userService.port }}
-    # /api/medications/*
+        - name: {{ .Values.global.userService.name }}
+          port: {{ .Values.global.userService.port }}
     - matches:
         - path:
             type: PathPrefix
             value: /api/medications
       backendRefs:
-        - name: {{ .Values.medicalService.name }}
-          port: {{ .Values.medicalService.port }}
-    # /api/symptoms/*
+        - name: {{ .Values.global.medicalService.name }}
+          port: {{ .Values.global.medicalService.port }}
     - matches:
         - path:
             type: PathPrefix
             value: /api/symptoms
       backendRefs:
-        - name: {{ .Values.healthService.name }}
-          port: {{ .Values.healthService.port }}
-    # /api/visits/*
+        - name: {{ .Values.global.healthService.name }}
+          port: {{ .Values.global.healthService.port }}
     - matches:
         - path:
             type: PathPrefix
             value: /api/visits
       backendRefs:
-        - name: {{ .Values.healthService.name }}
-          port: {{ .Values.healthService.port }}
-    # /api/ai/*
+        - name: {{ .Values.global.healthService.name }}
+          port: {{ .Values.global.healthService.port }}
     - matches:
         - path:
             type: PathPrefix
             value: /api/ai
       backendRefs:
-        - name: {{ .Values.aiService.name }}
-          port: {{ .Values.aiService.port }}
+        - name: {{ .Values.global.aiService.name }}
+          port: {{ .Values.global.aiService.port }}
 {{- end }}

@@ -1,10 +1,4 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — Rate limiting via BackendTrafficPolicy
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
-{{- if .Values.gateway.enabled }}
+{{- if .Values.global.gateway.enabled }}
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: BackendTrafficPolicy
 metadata:

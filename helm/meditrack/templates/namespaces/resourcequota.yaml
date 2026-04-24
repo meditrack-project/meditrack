@@ -1,9 +1,3 @@
-# ─────────────────────────────────────────────────────────────
-# MediTrack — ResourceQuota for namespace resource limits
-# Environment: both
-# Namespace: meditrack-dev | meditrack-prod
-# Phase: 2 — Kubernetes + Helm Implementation
-# ─────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -13,10 +7,10 @@ metadata:
     {{- include "meditrack.labels" . | nindent 4 }}
 spec:
   hard:
-    requests.cpu: {{ .Values.resourceQuota.requests.cpu | quote }}
-    requests.memory: {{ .Values.resourceQuota.requests.memory | quote }}
-    limits.cpu: {{ .Values.resourceQuota.limits.cpu | quote }}
-    limits.memory: {{ .Values.resourceQuota.limits.memory | quote }}
-    pods: {{ .Values.resourceQuota.pods | quote }}
-    services: {{ .Values.resourceQuota.services | quote }}
-    persistentvolumeclaims: {{ .Values.resourceQuota.pvcs | quote }}
+    requests.cpu: {{ .Values.global.resourceQuota.requests.cpu | quote }}
+    requests.memory: {{ .Values.global.resourceQuota.requests.memory | quote }}
+    limits.cpu: {{ .Values.global.resourceQuota.limits.cpu | quote }}
+    limits.memory: {{ .Values.global.resourceQuota.limits.memory | quote }}
+    pods: {{ .Values.global.resourceQuota.pods | quote }}
+    services: {{ .Values.global.resourceQuota.services | quote }}
+    persistentvolumeclaims: {{ .Values.global.resourceQuota.pvcs | quote }}
