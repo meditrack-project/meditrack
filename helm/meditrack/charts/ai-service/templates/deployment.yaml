@@ -45,8 +45,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       initContainers:
         {{- include "meditrack.initWait" (dict "name" "redis" "port" "6379") | nindent 8 }}
-        {{- include "meditrack.initWait" (dict "name" "medical-service" "port" "4002") | nindent 8 }}
-        {{- include "meditrack.initWait" (dict "name" "health-service" "port" "4003") | nindent 8 }}
+
       containers:
         - name: {{ .Values.global.aiService.name }}
           image: {{ .Values.global.registry }}/{{ .Values.global.aiService.image }}:{{ .Values.global.imageTag }}

@@ -30,7 +30,7 @@ helm upgrade --install meditrack-dev . \
   -f values.yaml \
   -f values-dev.yaml \
   --wait \
-  --timeout 5m
+  --timeout 10m
 
 echo ""
 echo "═══════════════════════════════════════════════════"
