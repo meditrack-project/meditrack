@@ -26,8 +26,5 @@ dependencies:
 - name: redis
   repository: file://charts/redis
   version: 2.0.0
-- name: haproxy
-  repository: file://charts/haproxy
-  version: 2.0.0
-digest: sha256:7b3cfc194dd277212849a08afec6d9599a63546d728346521804f8ef0e1006be
-generated: "2026-04-24T14:30:44.648687525Z"
+digest: sha256:f646d8d37b4495d9b50328c4ceaac4ace8301100bd65d8667222c206d906c326
+generated: "2026-04-25T07:43:55.87575285Z"

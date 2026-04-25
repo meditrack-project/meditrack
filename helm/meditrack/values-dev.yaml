@@ -128,10 +128,6 @@ global:
     pdb:
       enabled: false
 
-  haproxy:
-    pdb:
-      enabled: false
-
   config:
     logLevel: debug
     environment: development

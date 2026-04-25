@@ -10,6 +10,8 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
+      envoyService:
+        type: NodePort
       envoyDeployment:
         replicas: 2
         container:

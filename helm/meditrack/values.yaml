@@ -227,6 +227,14 @@ global:
     jwt:
       issuer: "meditrack"
       audience: "meditrack-app"
+    hosts:
+      prod: meditrack.prod.local
+      dev: meditrack.dev.local
+    nodePort:
+      http: 30080
+    workerIPs:
+      - 172.31.79.137
+      - 172.31.28.90
 
   # ─── Config ────────────────────────────────────────────────
 

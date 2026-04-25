@@ -8,11 +8,16 @@ metadata:
     {{- include "meditrack.labels" . | nindent 4 }}
 spec:
   gatewayClassName: {{ .Values.global.gateway.className }}
+  addresses:
+    {{- range .Values.global.gateway.workerIPs }}
+    - type: IPAddress
+      value: {{ . }}
+    {{- end }}
   listeners:
     - name: prod
       port: 80
       protocol: HTTP
-      hostname: {{ .Values.global.haproxy.hosts.prod }}
+      hostname: {{ .Values.global.gateway.hosts.prod }}
       allowedRoutes:
         namespaces:
           from: Selector
@@ -22,7 +27,7 @@ spec:
     - name: dev
       port: 80
       protocol: HTTP
-      hostname: {{ .Values.global.haproxy.hosts.dev }}
+      hostname: {{ .Values.global.gateway.hosts.dev }}
       allowedRoutes:
         namespaces:
           from: Selector
