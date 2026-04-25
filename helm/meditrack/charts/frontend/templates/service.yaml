@@ -3,10 +3,18 @@ kind: Service
 metadata:
   name: {{ .Values.global.frontend.name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.global.frontend.name }}
+    app.kubernetes.io/name: {{ .Values.global.frontend.name }}
+    app.kubernetes.io/part-of: meditrack
+    app.kubernetes.io/managed-by: helm
+    environment: {{ .Values.global.environment }}
 spec:
   type: ClusterIP
   selector:
     app: {{ .Values.global.frontend.name }}
   ports:
-    - port: {{ .Values.global.frontend.port }}
-      targetPort: {{ .Values.global.frontend.port }}
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
