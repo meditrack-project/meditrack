@@ -40,7 +40,7 @@ def create_token(user_id: str, email: str) -> str:
 
 def decode_token(token: str) -> dict:
     try:
-        payload = jwt.decode(token, JWT_PUBLIC_KEY, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, JWT_PUBLIC_KEY, algorithms=[JWT_ALGORITHM], audience="meditrack-app")
         return payload
     except JWTError:
         raise HTTPException(
