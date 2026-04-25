@@ -26,9 +26,9 @@ async def _fetch(client: httpx.AsyncClient, url: str) -> Any:
         return []
 
 
-async def fetch_all_data(token: str, days: int = 7) -> Dict[str, Any]:
+async def fetch_all_data(user_id: str, days: int = 7) -> Dict[str, Any]:
     """Fetch data from medical and health services in parallel."""
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"X-User-ID": user_id}
 
     async with httpx.AsyncClient(headers=headers) as client:
         med_urls = [
@@ -47,7 +47,6 @@ async def fetch_all_data(token: str, days: int = 7) -> Dict[str, Any]:
             return_exceptions=True,
         )
 
-        # Replace exceptions with empty lists
         results = [r if not isinstance(r, Exception) else [] for r in results]
 
         return {
@@ -60,9 +59,8 @@ async def fetch_all_data(token: str, days: int = 7) -> Dict[str, Any]:
 
 
 def summarize_health_data(raw_data: Dict[str, Any], days: int) -> Dict[str, Any]:
-    """Process raw API data into structured summary for Gemini prompt."""
+    """Process raw API data into structured summary for AI prompt."""
 
-    # --- Medications ---
     medications_raw = raw_data.get("medications", [])
     med_list = []
     for med in medications_raw[:10]:
@@ -72,7 +70,6 @@ def summarize_health_data(raw_data: Dict[str, Any], days: int) -> Dict[str, Any]
             "frequency": med.get("frequency", ""),
         })
 
-    # Today's logs
     today_data = raw_data.get("today_logs", {})
     today_total = today_data.get("total", 0)
     today_taken = today_data.get("taken_count", 0)
@@ -86,7 +83,6 @@ def summarize_health_data(raw_data: Dict[str, Any], days: int) -> Dict[str, Any]
             "taken": log.get("taken", False),
         })
 
-    # Adherence
     adherence_raw = raw_data.get("adherence", {})
     overall_avg = adherence_raw.get("overall_avg", 0.0)
     best = adherence_raw.get("best", {"name": "N/A", "percent": 0.0})
@@ -94,7 +90,6 @@ def summarize_health_data(raw_data: Dict[str, Any], days: int) -> Dict[str, Any]
     per_med = adherence_raw.get("per_medication", [])[:10]
     per_med_summary = [{"name": m.get("name", ""), "percent": m.get("percent", 0)} for m in per_med]
 
-    # --- Symptoms ---
     symptom_logs = raw_data.get("symptom_logs", [])
     total_entries = len(symptom_logs)
 
@@ -122,11 +117,9 @@ def summarize_health_data(raw_data: Dict[str, Any], days: int) -> Dict[str, Any]
     avg_energy = round(sum(energies) / len(energies), 1) if energies else 0.0
     avg_severity = round(sum(severities) / len(severities), 1) if severities else 0.0
 
-    # Top symptoms
     symptom_counter = Counter(all_symptoms_list)
     top_symptoms = [{"symptom": s, "count": c} for s, c in symptom_counter.most_common(5)]
 
-    # Mood trend
     if len(moods) >= 2:
         half = len(moods) // 2
         first_half_avg = sum(moods[:half]) / half
@@ -140,7 +133,6 @@ def summarize_health_data(raw_data: Dict[str, Any], days: int) -> Dict[str, Any]
     else:
         mood_trend = "stable"
 
-    # Best/worst days
     best_day = {"date": "N/A", "mood": 0}
     worst_day = {"date": "N/A", "mood": 10}
     for log in symptom_logs:
@@ -155,7 +147,6 @@ def summarize_health_data(raw_data: Dict[str, Any], days: int) -> Dict[str, Any]
         best_day = {"date": "N/A", "mood": 0}
         worst_day = {"date": "N/A", "mood": 0}
 
-    # --- Upcoming visits ---
     upcoming_raw = raw_data.get("upcoming_visits", [])
     upcoming = []
     for visit in upcoming_raw[:3]:
