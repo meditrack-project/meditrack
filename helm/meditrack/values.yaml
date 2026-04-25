@@ -7,7 +7,7 @@
 
 global:
   registry: "neerajbala"
-  imageTag: "latest"
+  imageTag: "v2"
   imagePullPolicy: Always
   environment: production
 
