@@ -30,6 +30,8 @@ def create_token(user_id: str, email: str) -> str:
     payload = {
         "sub": str(user_id),
         "email": email,
+        "iss": "meditrack",
+        "aud": "meditrack-app",
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS),
     }
     headers = {"kid": JWKS_KID}
