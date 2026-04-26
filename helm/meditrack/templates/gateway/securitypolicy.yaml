@@ -1,4 +1,4 @@
-{{- if and .Values.global.gateway.enabled (eq .Release.Name "meditrack-dev") }}
+{{- if .Values.global.gateway.enabled }}
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
