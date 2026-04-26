@@ -1,9 +1,9 @@
 # ─────────────────────────────────────────────────────────────
-# MediTrack — ClusterRoles for monitoring and NFS provisioner
+# MediTrack — ClusterRoles (created once from meditrack-dev)
 # Environment: cluster-scoped
-# Namespace: N/A
 # Phase: 2 — Kubernetes + Helm Implementation
 # ─────────────────────────────────────────────────────────────
+{{- if eq .Release.Name "meditrack-dev" }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -17,3 +17,4 @@ rules:
   - apiGroups: ["apps"]
     resources: ["deployments", "replicasets", "statefulsets"]
     verbs: ["get", "list", "watch"]
+{{- end }}
