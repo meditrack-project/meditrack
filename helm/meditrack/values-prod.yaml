@@ -7,6 +7,9 @@
 global:
   environment: production
 
+  gateway:
+    listenerName: prod
+
   resourceQuota:
     requests:
       cpu: "8"

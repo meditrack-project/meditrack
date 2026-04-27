@@ -227,6 +227,7 @@ global:
     jwt:
       issuer: "meditrack"
       audience: "meditrack-app"
+    listenerName: dev
     hosts:
       prod: meditrack.prod.local
       dev: meditrack.dev.local
