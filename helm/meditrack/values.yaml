@@ -251,12 +251,12 @@ global:
 
   resourceQuota:
     requests:
-      cpu: "4"
+      cpu: "8"
       memory: "8Gi"
     limits:
-      cpu: "8"
+      cpu: "16"
       memory: "16Gi"
-    pods: "40"
+    pods: "60"
     services: "20"
     pvcs: "15"
 

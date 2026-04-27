@@ -1,8 +1,19 @@
 # ─────────────────────────────────────────────────────────────
-# MediTrack — Prod environment overrides (minimal)
+# MediTrack — Prod environment overrides
 # Environment: prod
 # Phase: 2 — Kubernetes + Helm Implementation
 # ─────────────────────────────────────────────────────────────
 
 global:
   environment: production
+
+  resourceQuota:
+    requests:
+      cpu: "8"
+      memory: "12Gi"
+    limits:
+      cpu: "16"
+      memory: "24Gi"
+    pods: "60"
+    services: "20"
+    pvcs: "15"
